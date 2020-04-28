@@ -51,7 +51,7 @@ const upload = async function (params, action) {
         if (!vaultFunction) {
             throw new Error('Could not find environment variable \'VaultFunction\'')
         }
-        console.log('upload params: ', params)
+        console.log('upload params: ', params);
         const vaultparams = {
             "documentId": "",
             "fileName": params.data.FileName,
@@ -71,12 +71,18 @@ const upload = async function (params, action) {
             }
         };
 
-        const params = {
+        var options = {
+            //     pathParameters: { method: 'uploadPut' },
+            body: JSON.stringify(vaultparams),
+            //     headers: {}
+
+        }
+        const lambdaParams = {
             FunctionName: process.env.ApiGatewayLambda,
-            Payload: JSON.stringify(vaultparams)
+            Payload: JSON.stringify(options)
         };
-        console.log("====params ====lambdaInvoke===", params);
-        const lambdaInvoke = await lambda.invoke(params).promise();
+        console.log("====params ====lambdaInvoke===", lambdaParams);
+        const lambdaInvoke = await lambda.invoke(lambdaParams).promise();
         console.log("====lambdaInvoke =======", lambdaInvoke);
         // const getvaultjwt = await vaultjwt.createVaultJwt() 
         // var options = {
