@@ -72,9 +72,9 @@ const upload = async function (params, action) {
         };
 
         var options = {
-            //     pathParameters: { method: 'uploadPut' },
+            pathParameters: { type: "uploadPut", method: 'POST' },
             body: JSON.stringify(vaultparams),
-            //     headers: {}
+            headers: {}
 
         }
         const lambdaParams = {
