@@ -1,0 +1,423 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "2019-12-09T22:15:03Z",
+    "title": "${title}-api"
+  },
+  "host": "${full_domain}",
+  "basePath": "/${stage}",
+  "schemes": [
+    "https"
+  ],
+  "securityDefinitions": {
+    "CognitoAuthorizer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "x-amazon-apigateway-authtype": "cognito_user_pools",
+      "x-amazon-apigateway-authorizer": {
+        "type": "cognito_user_pools",
+        "providerARNs": [
+          "${cognito_user_pool_arn}"
+        ]
+      }
+    }
+  },
+  "paths": {
+    "/download/{documentId}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/PresignedGetData"
+            }
+          },
+          "401": {
+            "description": "401 response"
+          }
+        },
+		"security": [
+          {
+            "CognitoAuthorizer": []
+          }
+        ],
+        "x-amazon-apigateway-integration": {
+          "uri": "arn:aws:apigateway:${aws_region}:lambda:path/2015-03-31/functions/${ApiGatewayLambda_arn}/invocations",
+          "responses": {
+            "default": {
+              "statusCode": "200"
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "contentHandling": "CONVERT_TO_TEXT",
+          "type": "aws_proxy"
+        }
+      }
+    },
+    "/query": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "QueryRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/QueryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/DocumentList"
+            }
+          },
+          "401": {
+            "description": "401 response"
+          }
+        },
+	    "security": [
+          {
+            "CognitoAuthorizer": []
+          }
+        ],
+        "x-amazon-apigateway-integration": {
+          "uri": "arn:aws:apigateway:${aws_region}:lambda:path/2015-03-31/functions/${ApiGatewayLambda_arn}/invocations",
+          "responses": {
+            "default": {
+              "statusCode": "200"
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "contentHandling": "CONVERT_TO_TEXT",
+          "type": "aws_proxy"
+        }
+      }
+    },
+    "/upload": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "UploadRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UploadRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/PresignedPostData"
+            }
+          },
+          "401": {
+            "description": "401 response"
+          }
+        },
+		"security": [
+          {
+            "CognitoAuthorizer": []
+          }
+        ],
+        "x-amazon-apigateway-integration": {
+          "uri": "arn:aws:apigateway:${aws_region}:lambda:path/2015-03-31/functions/${ApiGatewayLambda_arn}/invocations",
+          "responses": {
+            "default": {
+              "statusCode": "200"
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "contentHandling": "CONVERT_TO_TEXT",
+          "type": "aws_proxy"
+        }
+      }
+    },
+    "/uploadPut": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "UploadRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UploadRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/PresignedPutData"
+            }
+          },
+          "401": {
+            "description": "401 response"
+          }
+        },
+		"security": [
+          {
+            "CognitoAuthorizer": []
+          }
+        ],
+        "x-amazon-apigateway-integration": {
+          "uri": "arn:aws:apigateway:${aws_region}:lambda:path/2015-03-31/functions/${ApiGatewayLambda_arn}/invocations",
+          "responses": {
+            "default": {
+              "statusCode": "200"
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "contentHandling": "CONVERT_TO_TEXT",
+          "type": "aws_proxy"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "DocumentList": {
+      "type": "object",
+      "properties": {
+        "documents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "documentId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "fileName": {
+                "type": "string"
+              },
+              "fileSize": {
+                "type": "integer"
+              },
+              "correlationId": {
+                "type": "string"
+              },
+              "transactionId": {
+                "type": "string"
+              },
+              "docType": {
+                "type": "string"
+              },
+              "mimeType": {
+                "type": "string"
+              },
+              "scanResult": {
+                "type": "string"
+              },
+              "additionalData": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "errorMessage": {
+          "type": "string"
+        }
+      },
+      "title": "list of documents"
+    },
+    "PresignedPutData": {
+      "type": "object",
+      "properties": {
+        "documentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "awsAccount": {
+          "type": "string"
+        },
+        "bucketName": {
+          "type": "string"
+        },
+        "objectKey": {
+          "type": "string"
+        },
+        "errorMessage": {
+          "type": "string"
+        }
+      },
+      "title": "Presigned Put Data"
+    },
+    "PresignedGetData": {
+      "type": "object",
+      "properties": {
+        "documentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "errorMessage": {
+          "type": "string"
+        }
+      },
+      "title": "Presigned Get Data"
+    },
+    "QueryRequest": {
+      "properties": {
+        "documentId": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "correlationId": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "transactionId": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "docType": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "query request"
+    },
+    "PresignedPostData": {
+      "type": "object",
+      "properties": {
+        "documentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "fields": {
+          "type": "object",
+          "properties": {}
+        },
+        "awsAccount": {
+          "type": "string"
+        },
+        "bucketName": {
+          "type": "string"
+        },
+        "objectKey": {
+          "type": "string"
+        },
+        "errorMessage": {
+          "type": "string"
+        }
+      },
+      "title": "Presigned Post Data"
+    },
+    "UploadRequest": {
+      "required": [
+        "correlationId",
+        "docType",
+        "fileName"
+      ],
+      "properties": {
+        "documentId": {
+          "type": "string"
+        },
+        "fileName": {
+          "type": "string"
+        },
+        "fileSize": {
+          "type": "integer"
+        },
+        "clientVaultId": {
+          "type": "string"
+        },
+        "correlationId": {
+          "type": "string"
+        },
+        "transactionId": {
+          "type": "string"
+        },
+        "docType": {
+          "type": "string"
+        },
+        "mimeType": {
+          "type": "string"
+        },
+        "additionalData": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "description": "upload request"
+    }
+  }
+}

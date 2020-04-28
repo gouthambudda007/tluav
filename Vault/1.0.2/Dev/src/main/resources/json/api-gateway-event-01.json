@@ -1,0 +1,45 @@
+{
+    "path": "/loanpackageready/sb1-tfc",
+    "httpMethod": "POST",
+    "body": "{\"eventId\":\"ep9_ce0b23f7-4907-4a55-814a-b62034ea6427\",\"eventTime\":\"1/17/2020 3:05:52 PM\",\"eventType\":\"CreateRequest\",\"meta\":{\"userId\":\"admin\",\"resourceType\":\"Transaction/DataDocsR2T\",\"resourceId\":\"ep9_ce0b23f7-4907-4a55-814a-b62034ea6427\",\"instanceId\":\"test\",\"resourceRef\":\"https://api.elliemae.com/partner/v1/transactions/ep9_ce0b23f7-4907-4a55-814a-b62034ea6427/request\"}}",
+    "resource": "/loanpackageready/{client}",
+    "isBase64Encoded": false,
+    "queryStringParameters": null,
+    "pathParameters": {
+        "client": "sb1-tfc"
+    },
+    "stageVariables": null,
+    "headers": {
+        "Content-Type": "application/json",
+        "Elli-Environment": "prod",
+        "Elli-Signature": "qDPZcRBcM4FSQZsHtatZZ+iBuuNFvZKlfvCbTtgE4J0=",
+        "Elli-SubscriptionId": "ce91b910-512c-45fa-8c0f-87ccdaddeba1",
+        "Host": "ya7djmi6x3.execute-api.us-east-1.amazonaws.com",
+        "X-Amzn-Trace-Id": "Root=1-5e21cd51-a8e9d859317a475cfa910edc",
+        "X-Forwarded-For": "3.223.148.223",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "requestContext": {
+        "accountId": "930493191792",
+        "resourceId": "y8c0d5",
+        "stage": "Test",
+        "requestId": "ac35d4e7-5d87-465c-bbbe-4f1da578105d",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "apiKey": null,
+            "sourceIp": "3.223.148.223",
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": null,
+            "user": null
+        },
+        "resourcePath": "/loanpackageready/{client}",
+        "httpMethod": "POST",
+        "apiId": "ya7djmi6x3"
+    }
+}

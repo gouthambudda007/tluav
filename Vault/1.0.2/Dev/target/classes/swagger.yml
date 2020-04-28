@@ -1,0 +1,230 @@
+---
+swagger: "2.0"
+info:
+  version: "2019-12-09T22:15:03Z"
+  title: "vault-api"
+#host: "ya7djmi6x3.execute-api.us-east-1.amazonaws.com"
+basePath: "/Vault"
+schemes:
+- "https"
+paths:
+  /upload:
+    post:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - name: docInfo
+          in: "body"
+          required: true
+          schema: 
+            "$ref": "#/definitions/UploadRequest"
+      responses:
+        200:
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/PresignedPostData"
+        401:
+          description: "Authentication information is missing or invalid"
+  /uploadPut:
+    post:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - name: docInfo
+          in: "body"
+          required: true
+          schema: 
+            "$ref": "#/definitions/UploadRequest"
+      responses:
+        200:
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/PresignedPutData"
+        401:
+          description: "Authentication information is missing or invalid"
+  /download/{documentId}:
+    get:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - name: documentId
+          in: "path"
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/PresignedGetData"
+        401:
+          description: "Authentication information is missing or invalid"
+  /query:
+    post:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - name: query
+          in: "body"
+          required: true
+          schema: 
+            "$ref": "#/definitions/QueryRequest"
+      responses:
+        200:
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/DocumentList"
+        401:
+          description: "Authentication information is missing or invalid"
+definitions:
+  UploadRequest:
+    description: upload request
+    properties:
+      documentId:
+        type: string
+      fileName:
+        type: string
+      fileSize:
+        type: integer
+      clientVaultId:
+        type: string
+      correlationId:
+        type: string
+      transactionId:
+        type: string
+      docType:
+        type: string
+      mimeType:
+        type: string
+      additionalData:
+        type: array
+        items:
+          type: object
+          properties:
+            key:
+              type: string
+            value:
+              type: string
+    required:
+      - fileName
+      - correlationId
+      - docType
+  QueryRequest:
+    description: query request
+    properties:
+      documentId:
+        type: array
+        items:
+          type: string
+      correlationId:
+        type: array
+        items:
+          type: string
+      transactionId:
+        type: array
+        items:
+          type: string
+      docType:
+        type: array
+        items:
+          type: string
+  PresignedPostData:
+    type: object
+    title: "Presigned Post Data"
+    properties:
+      documentId:
+        type: string
+        format: uuid
+      url:
+        type: string
+        format: uri
+      fields:
+        type: object
+        additionalProperties: true
+      awsAccount:
+        type: string
+      bucketName:
+        type: string
+      objectKey:
+        type: string
+      errorMessage:
+        type: string
+        default: null
+  PresignedPutData:
+    type: object
+    title: "Presigned Put Data"
+    properties:
+      documentId:
+        type: string
+        format: uuid
+      url:
+        type: string
+        format: uri
+      awsAccount:
+        type: string
+      bucketName:
+        type: string
+      objectKey:
+        type: string
+      errorMessage:
+        type: string
+        default: null
+  PresignedGetData:
+    type: object
+    title: "Presigned Get Data"
+    properties:
+      documentId:
+        type: string
+        format: uuid
+      url:
+        type: string
+        format: uri
+      errorMessage:
+        type: string
+        default: null
+  DocumentList:
+    type: object
+    title: "list of documents"
+    properties:
+      documents:
+        type: array
+        items:
+          type: object
+          properties:
+            documentId:
+              type: string
+              format: uuid
+            fileName:
+              type: string
+            fileSize:
+              type: integer
+            correlationId:
+              type: string
+            transactionId:
+              type: string
+            docType:
+              type: string
+            mimeType:
+              type: string
+            scanResult:
+              type: string
+            additionalData:
+              type: array
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                  value:
+                    type: string
+      errorMessage:
+        type: string
+        default: null
