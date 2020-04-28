@@ -11,18 +11,15 @@ if (!process.env.AskFunction) {
 
 const pre_allocate_instance = async function (session, datapoint) {
     datapoint.Parameters['_empower_base_url'] = await get_los_api(datapoint.Parameters.LOS)
-    var res = upload({
+    var res = await upload({
         metadata: {
             _remember_id: session.TransactionId,
             _datapoint: datapoint.DataPointName,
         },
         data: datapoint.Parameters
-    })
-    return res.then((res) => {
-        delete res.TransactionId
-        delete res.message
-        return res
-    })
+    });
+    console.log("==============pre_allocate_instance res===========", res);
+    return res;
 }
 
 const get_instance = function (session, datapoint) {
@@ -49,77 +46,76 @@ const get_instance = function (session, datapoint) {
 }
 
 const upload = async function (params, action) {
-    var vaultFunction = process.env.ApiGatewayLambda;
-    if (!vaultFunction) {
-        throw new Error('Could not find environment variable \'VaultFunction\'')
-    }
-    // var route = 'uploadPut'
-    console.log('upload params: ', params)
-    const vaultparams = {
-        "documentId": "",
-        "fileName": params.data.FileName,
-        "fileSize": params.data.size,
-        "correlationId": params.data._loan_number,
-        "transactionId": params.data._loan_number,
-        "docType": params.data.documentType,
-        "mimeType": params.data.contentType,
-        "additionalData": {
-            "FileName": params.data.FileName,
-            "name": params.data.name,
-            "createdOn": params.data.createdOn,
-            "createdBy": params.data.createdBy,
-            "category": params.data.category,
-            "extension": params.data.extension,
-            "createdOn": params.data.createdOn,
+    try {
+        var vaultFunction = process.env.ApiGatewayLambda;
+        if (!vaultFunction) {
+            throw new Error('Could not find environment variable \'VaultFunction\'')
         }
+        console.log('upload params: ', params)
+        const vaultparams = {
+            "documentId": "",
+            "fileName": params.data.FileName,
+            "fileSize": params.data.size,
+            "correlationId": params.data._loan_number,
+            "transactionId": params.data._loan_number,
+            "docType": params.data.documentType,
+            "mimeType": params.data.contentType,
+            "additionalData": {
+                "FileName": params.data.FileName,
+                "name": params.data.name,
+                "createdOn": params.data.createdOn,
+                "createdBy": params.data.createdBy,
+                "category": params.data.category,
+                "extension": params.data.extension,
+                "createdOn": params.data.createdOn,
+            }
+        };
 
+        const params = {
+            FunctionName: process.env.ApiGatewayLambda,
+            Payload: JSON.stringify(vaultparams)
+        };
+        console.log("====params ====lambdaInvoke===", params);
+        const lambdaInvoke = await lambda.invoke(params).promise();
+        console.log("====lambdaInvoke =======", lambdaInvoke);
+        // const getvaultjwt = await vaultjwt.createVaultJwt() 
+        // var options = {
+        // url: vaultUrl + '/' + route,
+        //     method: 'POST',
+        //     headers: {
+        //         'accept': 'application/json',
+        //         'content-type': 'application/json',
+        //         'Authorization': "Bearer "+getvaultjwt,
+        //     },
+        //     json: vaultparams
+        // }
+
+        // var options = {
+        //     pathParameters: { method: 'uploadPut' },
+        //     body: JSON.stringify(vaultparams),
+        //     headers: {}
+
+        // }
+        // console.log('upload vault params: ', vaultparams)
+        // console.log('options: ', options)
+        // const uploadData = await makeRequest(options)
+
+        // console.log("upload data:", uploadData)
+        // var vaultUpload = {
+        //     "Parameters": params.data,
+        //     "FileId": uploadData.documentId,
+        //     "TargetUrl": uploadData.url,
+        //     "message": "",
+        //     "transactionId": uploadData._loan_number
+        // }
+        // console.log("vault Upload:", vaultUpload)
+
+
+    } catch (err) {
+        console.log("====error in upload function =======", err);
+        return err;
     }
-    // const getvaultjwt = await vaultjwt.createVaultJwt() 
-    // var options = {
-    // url: vaultUrl + '/' + route,
-    //     method: 'POST',
-    //     headers: {
-    //         'accept': 'application/json',
-    //         'content-type': 'application/json',
-    //         'Authorization': "Bearer "+getvaultjwt,
-    //     },
-//     json: vaultparams
-// }
 
-    var options = {
-        pathParameters: {method: 'uploadPut' },
-        body: JSON.stringify(vaultparams),
-        headers: {}
-        
-    }
-    console.log('upload vault params: ', vaultparams)
-    console.log('options: ', options)
-    const uploadData = await makeRequest(options)
-
-    console.log("upload data:", uploadData)
-    var vaultUpload = {
-        "Parameters": params.data,
-        "FileId": uploadData.documentId,
-        "TargetUrl": uploadData.url,
-        "message": "",
-        "transactionId": uploadData._loan_number
-    }
-    console.log("vault Upload:", vaultUpload)
-
-    // return vaultUpload;
-
-    return new Promise((resolve, reject) => {
-                var params = {
-                    FunctionName: process.env.ApiGatewayLambda,
-                    Payload: JSON.stringify(vaultUpload)
-                };
-                lambda.invoke(params, function (err, data) {
-                    console.log("Vault Upload Response: ", JSON.parse(data.Payload).body);
-                    if (err) {console.error(err); resolve(err);} 
-                    resolve(JSON.parse(JSON.parse(data.Payload).body))
-      
-                });
-            });
 }
 
 const get = async function (params) {
@@ -146,21 +142,21 @@ const get = async function (params) {
         //     qs: params //
         // }
         var options = {
-            pathParameters: { type: 'download', method:'FileId'},
+            pathParameters: { type: 'download', method: 'FileId' },
             body: JSON.stringify(params),
             headers: {}
-            
+
         }
         const getDataFromDownload = await makeRequest(options)
         console.log('----------------get data', getDataFromDownload)
 
-        var vaultGet = 
-             [{
+        var vaultGet =
+            [{
                 "Parameters": params,
                 "FileId": _.get(JSON.parse(getDataFromDownload), "documentId"),
                 "TargetUrl": _.get(JSON.parse(getDataFromDownload), "url")
             }]
-        
+
         console.log("vault get(file retrieved):.......", vaultGet)
     }
     else {
@@ -176,10 +172,10 @@ const get = async function (params) {
         //     }
         // }
         var options = {
-            pathParameters: { method:'query'},
+            pathParameters: { method: 'query' },
             body: JSON.stringify(params),
             headers: {}
-            
+
         }
         const getData = await makeRequest(options)
         console.log('get data: ............', getData)
@@ -188,7 +184,7 @@ const get = async function (params) {
         var vaultGet = _.map(_.get(getData, "documents"), (document) => ({
             Parameters:
             {
-                "_loan_number": _.get(document,"correlationId"),
+                "_loan_number": _.get(document, "correlationId"),
                 "extension": _.get(document, "sourceData.extension"),
                 "documentType": _.get(document, "docType"),
                 "FileName": _.get(document, "fileName"),
@@ -200,31 +196,31 @@ const get = async function (params) {
                 "size": _.get(document, "docSize"),
                 "createdBy": "",
                 "name": _.get(document, "fileName"),
-                "loanNumber": _.get(document,"correlationId"),
+                "loanNumber": _.get(document, "correlationId"),
                 "category": _.get(document, "sourceData.category"),
                 "contentType": _.get(document, "mimeType"),
                 "_channel": "correspondent"
             }, FileId: _.get(document, "documentId")
         }));
-        
+
 
         console.log("vault get:.......", vaultGet)
 
     }
 
     // return vaultGet
-    return new Promise((resolve, reject) => {
-                var params = {
-                    FunctionName: process.env.ApiGatewayLambda,
-                    Payload: vaultGet
-                };
-                lambda.invoke(params, function (err, data) {
-                    console.log("Vault Get Response: ", Payload.data.body);
-                    if (err) {console.error(err); resolve(err);} 
-                    resolve(Payload.data.body)
-      
-                });
-            });
+    return new Promise((resolve, reject) => {
+        var params = {
+            FunctionName: process.env.ApiGatewayLambda,
+            Payload: vaultGet
+        };
+        lambda.invoke(params, function (err, data) {
+            console.log("Vault Get Response: ", Payload.data.body);
+            if (err) { console.error(err); resolve(err); }
+            resolve(Payload.data.body)
+
+        });
+    });
 }
 
 const makeRequest = function (options) {
