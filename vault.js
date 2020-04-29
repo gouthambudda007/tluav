@@ -76,8 +76,10 @@ const upload = async function (params, action) {
             path: "/uploadPut",
             resource: "/uploadPut",
             body: JSON.stringify(vaultparams),
-            headers: {}
-
+            headers: {
+                accept: "application/json",
+                'content-type': "application/json",
+            }
         }
         const lambdaParams = {
             FunctionName: process.env.ApiGatewayLambda,
