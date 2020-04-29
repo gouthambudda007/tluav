@@ -79,24 +79,31 @@ const upload = async function (params, action) {
             headers: {
                 accept: "application/json",
                 'content-type': "application/json",
+            },
+            "requestContext": {
+                "identity": {
+                    "cognitoIdentityPoolId": null,
+                    "accountId": null,
+                    "cognitoIdentityId": null,
+                    "caller": null,
+                    "apiKey": null,
+                    "sourceIp": "8.39.161.192",
+                    "cognitoAuthenticationType": null,
+                    "cognitoAuthenticationProvider": null,
+                    "userArn": null,
+                    "userAgent": null,
+                    "user": null
+                },
+                "resourcePath": "/uploadPut",
+                "httpMethod": "POST",
             }
         }
+
         const lambdaParams = {
             FunctionName: process.env.ApiGatewayLambda,
             Payload: JSON.stringify(options)
         };
         console.log("====params ====lambdaInvoke===", lambdaParams);
-        const reqd = request({
-            url: '/uploadPut',
-            method: 'POST',
-            headers: {
-                'accept': 'application/json',
-                'content-type': 'application/json',
-            },
-            json: vaultparams
-        });
-        console.log("=======reqd=d===========", reqd);
-        console.log("=======reqd============", JSON.stringify(reqd));
         const lambdaInvoke = await lambda.invoke(lambdaParams).promise();
         console.log("====lambdaInvoke =======", lambdaInvoke);
 
