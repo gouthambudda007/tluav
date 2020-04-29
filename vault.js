@@ -18,9 +18,33 @@ const pre_allocate_instance = async function (session, datapoint) {
         },
         data: datapoint.Parameters
     });
-    console.log("==============pre_allocate_instance res===========", res);
-    
-    return res;
+    console.log("==============res res===========", res);
+
+    const finalResponse = {
+        Parameters: {
+            "_loan_number": _.get(datapoint.Parameters, "_loan_number"),
+            "extension": _get(datapoint.Parameters, "extension"),
+            "documentType": _.get(datapoint.Parameters, "documentType"),
+            "FileName": _.get(datapoint.Parameters, "FileName"),
+            "createdOn": _.get(datapoint.Parameters, "createdOn"),
+            "_file": {
+                "_file_type": _.get(datapoint.Parameters, "extension"),
+                "_file_name": _.get(datapoint.Parameters, "fileName"),
+            },
+            "size": _.get(datapoint.Parameters, "size"),
+            "createdBy": _.get(datapoint.Parameters, "createdBy"),
+            "name": _.get(datapoint.Parameters, "FileName"),
+            "loanNumber": _.get(datapoint.Parameters, "_loan_number"),
+            "category": _.get(datapoint.Parameters, "category"),
+            "contentType": _.get(datapoint.Parameters, "contentType"),
+            "_channel": "correspondent"
+        },
+        TargetUrl: res.url,
+        FileId: res.documentId
+    }
+    console.log("==============finalResponse res===========", JSON.stringify(finalResponse));
+
+    return finalResponse;
 }
 
 const get_instance = function (session, datapoint) {
