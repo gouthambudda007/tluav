@@ -86,19 +86,21 @@ const upload = async function (params, action) {
             Payload: JSON.stringify(options)
         };
         console.log("====params ====lambdaInvoke===", lambdaParams);
+        const reqd = request({
+            url: '/uploadPut',
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/json',
+            },
+            json: vaultparams
+        });
+        console.log("=======reqd=d===========", reqd);
+        console.log("=======reqd============", JSON.stringify(reqd));
         const lambdaInvoke = await lambda.invoke(lambdaParams).promise();
         console.log("====lambdaInvoke =======", lambdaInvoke);
-        // const getvaultjwt = await vaultjwt.createVaultJwt() 
-        // var options = {
-        // url: vaultUrl + '/' + route,
-        //     method: 'POST',
-        //     headers: {
-        //         'accept': 'application/json',
-        //         'content-type': 'application/json',
-        //         'Authorization': "Bearer "+getvaultjwt,
-        //     },
-        //     json: vaultparams
-        // }
+
+
 
         // var options = {
         //     pathParameters: { method: 'uploadPut' },
