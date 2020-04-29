@@ -19,6 +19,7 @@ const pre_allocate_instance = async function (session, datapoint) {
         data: datapoint.Parameters
     });
     console.log("==============pre_allocate_instance res===========", res);
+    
     return res;
 }
 
@@ -106,9 +107,11 @@ const upload = async function (params, action) {
         console.log("====params ====lambdaInvoke===", lambdaParams);
         const lambdaInvoke = await lambda.invoke(lambdaParams).promise();
         console.log("====lambdaInvoke =======", lambdaInvoke);
-
-
-
+        const payloadres = JSON.parse(lambdaInvoke.Payload);
+        console.log("====payloadres =======", payloadres);
+        const finalResponse = JSON.parse(payloadres.body);
+        console.log("====finalResponse =======", finalResponse);
+        return finalResponse;
         // var options = {
         //     pathParameters: { method: 'uploadPut' },
         //     body: JSON.stringify(vaultparams),
